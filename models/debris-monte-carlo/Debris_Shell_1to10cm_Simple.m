@@ -17,16 +17,15 @@ clear; clc; close all;
 %       MLI      = 0.56
 %       NaK      = 0.85
 %
-%  All outputs are saved to:
-%  C:\Users\solor\OneDrive\Desktop\Senior Project\
-%  Updated Orientation Sim
+%  All outputs are saved to the model-outputs folder under the
+%  current working directory.
 % ============================================================
 
 
 %% OUTPUT FOLDER
 
-saveFolder = ...
-    'C:\Users\solor\OneDrive\Desktop\Senior Project\Updated Orientation Sim';
+relativeSaveFolder = './model-outputs';
+saveFolder = fullfile(pwd,relativeSaveFolder);
 
 if ~exist(saveFolder,'dir')
     mkdir(saveFolder);
