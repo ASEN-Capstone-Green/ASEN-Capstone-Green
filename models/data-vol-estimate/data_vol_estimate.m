@@ -128,7 +128,17 @@ ylabel("bits (count)")
 plot(log.TimeUTC(1:end), log.GeneratedBits, 'LineWidth',1.5);
 plot(log.TimeUTC(1:end), log.DownlinkedBits, 'LineWidth',1.5);
 plot(log.TimeUTC(1:end), log.DroppedBits, 'LineWidth',1.5);
-legend("Generated","Downlinked","Dropped")
+num_missed_passes = sum(missed_passes);
+if num_missed_passes > 0
+    for i = 1:numel(gsp_starts)
+        if missed_passes(i)
+            xline(gsp_starts(i), '--k', 'LineWidth', 1.5);
+        end
+    end
+    legend("Generated","Downlinked","Dropped","Missed Pass")
+else
+    legend("Generated","Downlinked","Dropped")
+end
 
 %% metrics
 % fprintf("Camera rate passed: %.0f bps\n", camera.data_rate);
