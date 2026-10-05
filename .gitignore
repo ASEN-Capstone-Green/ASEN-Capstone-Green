@@ -70,9 +70,9 @@ Testing/
 
 # matlab
 *.asv
-models/*.png
-models/*.fig
-models/*.jpg
+models/**/*.png
+models/**/*.fig
+models/**/*.jpg
 
 # vscode setttings
 .vscode/*

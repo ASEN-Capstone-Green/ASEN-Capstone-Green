@@ -6,6 +6,8 @@ close all;
 % this flag controls whether storage cap line is plotted, makes plot much
 % harder to read as the storage cap is much larger than the used storage
 PLOT_CAP_BITS = 0;
+% on by default as rerunning sim can take some time
+SAVE_FIGS = 1;
 
 %% defined constants
 earth.R = 6371; % km
@@ -36,7 +38,7 @@ h_and_s.data_packet_sz = 8*h_and_s.num_temp_sensors; % bits
 h_and_s.data_rate = h_and_s.data_packet_sz * h_and_s.polling_rate; % bits/s
 
 % comms.data_rate = 150e3; % bits/s (150 kbps)
-comms.data_rate = 10e6; % bits/s (10 Mbps)
+comms.data_rate = 0.1e6; % bits/s (0.1 Mbps)
 
 dt_fmt = "dd/MM/uuuu HH:mm:ss.SSS";
 dt_opts = {"TimeZone","UTC","Format",dt_fmt};
@@ -49,10 +51,10 @@ gsp_starts = [
     datetime("27/06/2027 07:05:30",dt_opts{:});
     datetime("27/06/2027 17:30:00",dt_opts{:});
     datetime("27/06/2027 19:05:30",dt_opts{:});
-    % datetime("28/06/2027 05:30:00",dt_opts{:});
-    % datetime("28/06/2027 07:05:30",dt_opts{:});
-    % datetime("28/06/2027 17:30:00",dt_opts{:});
-    % datetime("28/06/2027 19:05:30",dt_opts{:});
+    datetime("28/06/2027 05:30:00",dt_opts{:});
+    datetime("28/06/2027 07:05:30",dt_opts{:});
+    datetime("28/06/2027 17:30:00",dt_opts{:});
+    datetime("28/06/2027 19:05:30",dt_opts{:});
     %         DD/MM/YYYY HH:MM:SS
 ]; 
     
@@ -65,10 +67,10 @@ gsp_ends = [
     datetime("27/06/2027 07:08:30",dt_opts{:});
     datetime("27/06/2027 17:38:00",dt_opts{:});
     datetime("27/06/2027 19:08:30",dt_opts{:});
-    % datetime("28/06/2027 05:38:00",dt_opts{:});
-    % datetime("28/06/2027 07:08:30",dt_opts{:});
-    % datetime("28/06/2027 17:38:00",dt_opts{:});
-    % datetime("28/06/2027 19:08:30",dt_opts{:});
+    datetime("28/06/2027 05:38:00",dt_opts{:});
+    datetime("28/06/2027 07:08:30",dt_opts{:});
+    datetime("28/06/2027 17:38:00",dt_opts{:});
+    datetime("28/06/2027 19:08:30",dt_opts{:});
     %         DD/MM/YYYY HH:MM:SS
 ];
 
@@ -85,11 +87,11 @@ dt_s = 60; % step time size in seconds
 % it is too large relative to the pass durations and data gen windows
 
 sim_start = min(gsp_starts);
-sim_end = min(gsp_starts) + days(2); % currently hardcoded
-% sim_end = min(gsp_starts) + days(3);
+% sim_end = min(gsp_starts) + days(2); % currently hardcoded
+sim_end = min(gsp_starts) + days(3);
 
-num_events = 300; % events over the range
-% num_events = 450;
+% num_events = 300; % events over the range
+num_events = 450;
 
 window_s = seconds(sim_end - sim_start);
 latest_start_s = window_s - camera.avg_data_window;
@@ -109,7 +111,11 @@ log = simulate_storage(sim_start, sim_end, dt_s, storage_capacity_bits, ...
 
 %% plot the results
 figure;
+sgtitle("Data Volume Estimate (Downlink Rate of " + ...
+    num2str(comms.data_rate/1e6) + " Mbps)");
+
 subplot(2,1,1);
+grid on;
 hold on;
 xlabel("Time (UTC) HH:MM:SS")
 ylabel("Storage bits (count)")
@@ -122,6 +128,7 @@ else
 end
 
 subplot(2,1,2);
+grid on;
 hold on;
 xlabel("Time (UTC) HH:MM:SS")
 ylabel("bits (count)")
@@ -138,6 +145,12 @@ if num_missed_passes > 0
     legend("Generated","Downlinked","Dropped","Missed Pass")
 else
     legend("Generated","Downlinked","Dropped")
+end
+
+%% figure saving
+if SAVE_FIGS
+    data_rate_mbps = strrep(num2str(comms.data_rate/1e6),'.','_');
+    print("data-vol-estimate-"+data_rate_mbps+"mbps", '-dpng', '-r600');
 end
 
 %% metrics
