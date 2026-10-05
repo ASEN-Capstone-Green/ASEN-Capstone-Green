@@ -41,10 +41,12 @@ git submodule update --init --recursive
 > Message me on Teams and I can give you commit access to these repositories! -Luke
 
 ### 1.2.1 Main Repository Workflow
+Some of the code in this general repository is not immediately flight critical, so the testing and integration workflow is not quite as strict as the fsw repository, but the default should still be minimizing pushing non-working code. 
+
+Ground processing and interfaces, especially, still have strict requirements to the workflow, just not quite as strict as the fsw repository (since it's generally working with less sensitive hardware). It generally doesn't matter for preliminary models and analysis, but the goal for final models is quality graphs and results. Feel free to make new branches for your own development!
 
 ### 1.2.2 Flight Software Repository Workflow
-Submodules and tags
-
+Refer to the [fsw repository](https://github.com/ASEN-Capstone-Green/asen4018-green-fsw). 
 
 # 2. Ground Software
 

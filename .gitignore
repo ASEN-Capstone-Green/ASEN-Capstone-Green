@@ -67,3 +67,14 @@ vcpkg_installed/
 # test output & cache
 Testing/
 .cache/
+
+# matlab
+*.asv
+models/*.png
+models/*.fig
+models/*.jpg
+
+# vscode setttings
+.vscode/*
+# !.vscode/launch.json
+# !.vscode/tasks.json
