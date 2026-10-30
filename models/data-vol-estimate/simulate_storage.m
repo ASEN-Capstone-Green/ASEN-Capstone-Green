@@ -38,34 +38,45 @@ function log = simulate_storage(sim_start, sim_end, dt_s, capacity_bits, ...
    
     n_passes = numel(pass_starts);
     n_data_windows = numel(data_gen_starts);
+    first_pass = 1;
+    first_data_window = 1;
 
     for k = 1:n
+        % moving index allows skipping unnecessary searches
+        while first_pass <= n_passes && pass_ends(first_pass) <= step_starts(k)
+            first_pass = first_pass + 1;
+        end
+        while first_data_window <= n_data_windows && ...
+                data_gen_ends(first_data_window) <= step_starts(k)
+            first_data_window = first_data_window + 1;
+        end
+
         % sum the usable part of each pass overlapping this step
         usable_pass_s = 0;
-        for j = 1:n_passes
+        j = first_pass;
+        while j <= n_passes && pass_starts(j) < step_ends(k)
             if ~missed_passes(j)
                 overlap_start = max(step_starts(k), pass_starts(j));
                 overlap_end = min(step_ends(k), pass_ends(j));
-                overlap = (overlap_end - overlap_start);
-                % ignore negative overlap (no overlap)
-                if overlap > 0
-                    usable_pass_s = usable_pass_s + seconds(overlap);
+                if overlap_end > overlap_start % ignore negative overlap
+                    usable_pass_s = usable_pass_s + seconds(overlap_end - overlap_start);
                 end
             end
+            j = j + 1;
         end
         % make sure we don't exceed step duration
         usable_pass_s = min(usable_pass_s, step_durations_s(k));
 
         % sum the usable part of each data gen window overlapping this step
         usable_data_gen_s = 0;
-        for j = 1:n_data_windows
+        j = first_data_window;
+        while j  <= n_data_windows && data_gen_starts(j) < step_ends(k)
             overlap_start = max(step_starts(k), data_gen_starts(j));
             overlap_end = min(step_ends(k), data_gen_ends(j));
-            overlap = (overlap_end - overlap_start);
-            % ignore negative overlap (no overlap)
-            if overlap > 0
-                usable_data_gen_s = usable_data_gen_s + seconds(overlap);
+            if overlap_end > overlap_start % ignore negative overlap
+                usable_data_gen_s = usable_data_gen_s + seconds(overlap_end - overlap_start);
             end
+            j = j + 1;
         end
         % make sure we don't exceed step duration
         usable_data_gen_s = min(usable_data_gen_s, step_durations_s(k));
