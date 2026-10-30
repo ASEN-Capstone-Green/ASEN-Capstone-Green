@@ -22,7 +22,7 @@ orbit.altitude = 550; % km
 orbit.period = 2*pi*sqrt((orbit.altitude+earth.R)^3/earth.mu); % s
 orbits.per_day = 24*3600/orbit.period; % orbits/day
 
-% camera.polling_rate = 10e3; % Hz
+% camera.polling_rate = 100e6; % Hz
 camera.events_per_object = 2000;
 camera.bits_per_event = 32; % bits
 camera.avg_data_window = 100e-3; % seconds/object
@@ -37,7 +37,6 @@ h_and_s.num_temp_sensors = 5;
 h_and_s.data_packet_sz = 8*h_and_s.num_temp_sensors; % bits
 h_and_s.data_rate = h_and_s.data_packet_sz * h_and_s.polling_rate; % bits/s
 
-% comms.data_rate = 150e3; % bits/s (150 kbps)
 comms.data_rate = 0.1e6; % bits/s (0.1 Mbps)
 
 dt_fmt = "dd/MM/uuuu HH:mm:ss.SSS";
@@ -86,17 +85,16 @@ dt_s = 60; % step time size in seconds
 % you can increase dt_s to speed up the sim, but you may lose accuracy if
 % it is too large relative to the pass durations and data gen windows
 
+num_days = 3;
 sim_start = min(gsp_starts);
-% sim_end = min(gsp_starts) + days(2); % currently hardcoded
-sim_end = min(gsp_starts) + days(3);
+sim_end = min(gsp_starts) + days(num_days);
 
-% num_events = 300; % events over the range
-num_events = 450;
+num_events = 150*num_days;
 
 window_s = seconds(sim_end - sim_start);
 latest_start_s = window_s - camera.avg_data_window;
 
-data_starts = sim_start + seconds(rand(num_events,1)*latest_start_s);
+data_starts = sort(sim_start + seconds(rand(num_events,1)*latest_start_s));
 data_ends = data_starts + seconds(camera.avg_data_window);
 
 %% run the simulation
