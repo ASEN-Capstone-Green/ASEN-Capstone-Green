@@ -5,14 +5,14 @@ close all;
 
 %% file params
 current_folder = pwd;
-gsp_folder = "/gsp-csvs";
+gsp_folder = "../shared-model-data/gsp-csvs";
 
 gsp_path = current_folder + gsp_folder;
 
 %% read in files
-cd(gsp_path)
+cd(gsp_folder)
 file = dir('*DownlinkWindows.csv');
-cd ..
+cd(current_folder)
 
 num_files = length(file);
 
